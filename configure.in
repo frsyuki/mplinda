@@ -1,0 +1,64 @@
+AC_INIT(tuplespace.cc)
+AC_CONFIG_AUX_DIR(ac)
+AC_CANONICAL_TARGET
+
+AM_INIT_AUTOMAKE(mplinda, 0.0.1)
+AC_CONFIG_HEADER(config.h)
+
+AC_SUBST(CXXFLAGS)
+CXXFLAGS="-O4 -Wall $CXXFLAGS"
+
+AC_PROG_CC
+AC_PROG_CXX
+
+AC_ARG_WITH([msgpack],
+	AS_HELP_STRING([--with-msgpack=DIR],
+				   [specify the root directory for msgpack library]),
+	[msgpack_path="$withval"], [])
+if test "$msgpack_path" != ""; then
+	CXXFLAGS="$CXXFLAGS -I$msgpack_path/include"
+	CFLAGS="$CFLAGS -I$msgpack_path/include"
+	LDFLAGS="$LDFLAGS -L$msgpack_path/lib"
+fi
+
+AC_ARG_WITH([mpio],
+	AS_HELP_STRING([--with-mpio=DIR],
+				   [specify the root directory for mpio library]),
+	[mpio_path="$withval"], [])
+if test "$mpio_path" != ""; then
+	CXXFLAGS="$CXXFLAGS -I$mpio_path/include"
+	CFLAGS="$CFLAGS -I$mpio_path/include"
+	LDFLAGS="$LDFLAGS -L$mpio_path/lib"
+fi
+
+AC_ARG_WITH([msgpack-rpc],
+	AS_HELP_STRING([--with-msgpack-rpc=DIR],
+				   [specify the root directory for msgpack-rpc library]),
+	[msgpack_rpc_path="$withval"], [])
+if test "$msgpack_rpc_path" != ""; then
+	CXXFLAGS="$CXXFLAGS -I$msgpack_rpc_path/include"
+	CFLAGS="$CFLAGS -I$msgpack_rpc_path/include"
+	LDFLAGS="$LDFLAGS -L$msgpack_rpc_path/lib"
+fi
+
+
+AC_CHECK_LIB(stdc++, main)
+
+AC_CHECK_LIB(pthread,pthread_create,,
+	AC_MSG_ERROR([Can't find pthread library]))
+
+AC_CHECK_LIB(msgpack,main,,
+	AC_MSG_ERROR([Can't find msgpack library.
+--with-msgpack=DIR option may be needed.]))
+
+AC_CHECK_LIB(mpio,main,,
+	AC_MSG_ERROR([Can't find mpio library.
+--with-mpio=DIR option may be needed.]))
+
+AC_CHECK_LIB(msgpack-rpc,main,,
+	AC_MSG_ERROR([Can't find msgpack-rpc library.
+--with-msgpack-rpc=DIR option may be needed.]))
+
+
+AC_OUTPUT([Makefile])
+
